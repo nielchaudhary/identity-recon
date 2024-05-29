@@ -15,7 +15,7 @@ interface GlobalLoggerOptions {
   
   const globalLogger: GlobalLoggerOptions = {
     enabled: true, // Enable the global logger by default
-    level: 'info',
+    level: 'debug',
     levels: logLevels
   };
   
@@ -33,7 +33,7 @@ interface GlobalLoggerOptions {
     }
   
     info(message: string): void {
-      this.log('info', message);
+      this.log('debug', message);
     }
   
     // Other log methods like warn, error, debug can be added similarly

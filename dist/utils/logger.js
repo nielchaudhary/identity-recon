@@ -11,7 +11,7 @@ const logLevels = {
 exports.logLevels = logLevels;
 const globalLogger = {
     enabled: true, // Enable the global logger by default
-    level: 'info',
+    level: 'debug',
     levels: logLevels
 };
 exports.globalLogger = globalLogger;
@@ -25,7 +25,7 @@ class Logger {
         }
     }
     info(message) {
-        this.log('info', message);
+        this.log('debug', message);
     }
 }
 exports.Logger = Logger;
