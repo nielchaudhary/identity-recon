@@ -12,13 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const app = (0, express_1.default)();
-const logger_1 = require("./utils/logger");
-const database_1 = require("./utils/database");
-const logger = new logger_1.Logger('AppLogger');
-const onServerRunning = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, database_1.dbConnect)();
-    logger.info('Server Running on Port 3000');
+exports.dbConnect = void 0;
+const promise_1 = __importDefault(require("mysql2/promise"));
+const logger_1 = require("../utils/logger");
+const logger = new logger_1.Logger('DBLogger');
+const dbConnect = () => __awaiter(void 0, void 0, void 0, function* () {
+    const pool = promise_1.default.createPool({
+        host: '127.0.0.1',
+        user: 'root',
+        password: 'neepushika20',
+        database: 'contacts',
+        connectionLimit: 10,
+    });
+    try {
+        const [rows] = yield pool.query("SELECT * FROM Identity");
+        logger.info(`Connected to database.`);
+    }
+    catch (err) {
+        logger.error('Error connecting to database:', err);
+    }
 });
-app.listen(3000, onServerRunning);
+exports.dbConnect = dbConnect;

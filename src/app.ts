@@ -1,10 +1,12 @@
 import express from 'express';
 const app = express();
 
-import { Logger, globalLogger } from './utils/logger';
-const logger = new Logger('rootAppLogger');
+import { Logger } from './utils/logger';
+import { dbConnect } from './utils/database';
+const logger = new Logger('AppLogger');
 
-const onServerRunning = () => {
+const onServerRunning = async () => {
+  await dbConnect();
   logger.info('Server Running on Port 3000');
 };
 

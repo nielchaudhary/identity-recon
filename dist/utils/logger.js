@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logLevels = exports.globalLogger = exports.Logger = void 0;
-const globalContext = 'ServerLogger';
+const globalContext = 'Identity-Recon';
 const logLevels = {
     error: 0,
     warn: 1,
@@ -26,6 +26,9 @@ class Logger {
     }
     info(message) {
         this.log('debug', message);
+    }
+    error(message, error) {
+        this.log('error', `${message}${error ? `: ${error.message}` : ''}`);
     }
 }
 exports.Logger = Logger;

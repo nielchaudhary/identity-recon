@@ -1,10 +1,10 @@
 export interface Contact {
   id: number;
-  phoneNumber: string;
-  email: string;
-  linkedId: number;
-  linkPrecedence: string;
+  phoneNumber: string | null;
+  email: string | null;
+  linkedId: number | null;
+  linkPrecedence: 'primary' | 'secondary';
   createdAt: Date;
   updatedAt: Date;
-  deletedAt?: Date;
-}
+  deletedAt: Date | null;
+};
