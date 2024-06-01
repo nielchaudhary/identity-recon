@@ -2,7 +2,7 @@ export interface Contact {
   id: number;
   phoneNumber: string;
   email: string;
-  linkedId: number | bigint;
+  linkedId: number;
   linkPrecedence: string;
   createdAt: Date;
   updatedAt: Date;
