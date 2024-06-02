@@ -31,30 +31,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dbConnect = void 0;
-const promise_1 = __importDefault(require("mysql2/promise"));
+const sequelize_typescript_1 = require("sequelize-typescript");
 const dotenv = __importStar(require("dotenv"));
 const logger_1 = require("../utils/logger");
-dotenv.config();
 const logger = new logger_1.Logger('DBLogger');
+dotenv.config();
+const sequelize = new sequelize_typescript_1.Sequelize({
+    dialect: 'mysql',
+    host: process.env.DB_HOST,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    models: [__dirname + '/../contactModel.ts'],
+});
 const dbConnect = () => __awaiter(void 0, void 0, void 0, function* () {
-    const pool = promise_1.default.createPool({
-        host: '127.0.0.1',
-        user: 'root',
-        database: 'contacts',
-        password: process.env.DB_PASSWORD,
-        connectionLimit: 10,
-    });
     try {
-        const [rows] = yield pool.query("SELECT * FROM Identity");
-        logger.info(`Connected to database.`);
+        yield sequelize.authenticate();
+        logger.info('Database connection has been established successfully.');
     }
-    catch (err) {
-        logger.error('Error connecting to database:', err);
+    catch (error) {
+        logger.error('Unable to connect to the database:', error);
+        throw error;
     }
 });
 exports.dbConnect = dbConnect;
+exports.default = sequelize;

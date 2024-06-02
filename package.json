@@ -15,7 +15,10 @@
     "express": "^4.19.2",
     "express-http-context": "^1.2.4",
     "mysql2": "^3.10.0",
-    "nodemon": "^3.1.2"
+    "nodemon": "^3.1.2",
+    "reflect-metadata": "^0.2.2",
+    "sequelize": "^6.37.3",
+    "sequelize-typescript": "^2.1.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.3.0",

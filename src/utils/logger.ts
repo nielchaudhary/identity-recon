@@ -7,15 +7,12 @@ interface GlobalLoggerOptions {
 const globalContext: string = 'Identity-Recon';
 
 const logLevels = {
-  error: 0,
-  warn: 1,
   info: 2,
-  debug: 3
 } as const;
 
-const globalLogger: GlobalLoggerOptions = {
+ const globalLogger: GlobalLoggerOptions = {
   enabled: true, // Enable the global logger by default
-  level: 'debug',
+  level: 'info',
   levels: logLevels
 };
 
@@ -27,17 +24,17 @@ class Logger {
   }
 
   log(level: keyof typeof logLevels, message: string): void {
-    if (globalLogger.enabled && globalLogger.levels[level] >= globalLogger.levels[globalLogger.level]) {
+    if (globalLogger.enabled) {
       console.log(`${globalContext}: [${this.name}] ${message}`);
     }
   }
 
   info(message: string): void {
-    this.log('debug', message);
+    this.log('info', message);
   }
 
   error(message: string, error?: Error): void {
-    this.log('error', `${message}${error ? `: ${error.message}` : ''}`);
+    this.log('info', `${message}${error ? `: ${error.message}` : ''}`);
   }
 }
 
