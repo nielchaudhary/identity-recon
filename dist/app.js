@@ -17,8 +17,10 @@ const app = (0, express_1.default)();
 require("reflect-metadata");
 const logger_1 = require("./utils/logger");
 const database_1 = require("./utils/database");
+const identifyHandler_1 = require("./handlers/identifyHandler");
 const logger = new logger_1.Logger('AppLogger');
 app.use(express_1.default.json());
+app.post('/identify', identifyHandler_1.identifyHandler);
 const onServerRunning = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, database_1.dbConnect)();
     logger.info('Server Running on Port 3000');

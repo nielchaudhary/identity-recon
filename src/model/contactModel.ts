@@ -11,7 +11,7 @@ export class Contact extends Model<Contact> {
     autoIncrement: true,
     primaryKey: true,
   })
-  id!: number;
+  id! : number;
 
   @Column({
     type: DataType.STRING,

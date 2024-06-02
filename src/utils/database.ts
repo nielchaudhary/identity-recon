@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import * as dotenv from 'dotenv';
 import { Logger } from '../utils/logger';
+import { Contact } from '../model/contactModel';
 
 const logger = new Logger('DBLogger')
 
@@ -14,6 +15,9 @@ const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   models: [__dirname + '/../contactModel.ts'], 
 });
+
+sequelize.addModels([Contact]);
+
 
 export const dbConnect = async () => {
   try {

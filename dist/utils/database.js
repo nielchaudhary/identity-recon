@@ -36,6 +36,7 @@ exports.dbConnect = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const dotenv = __importStar(require("dotenv"));
 const logger_1 = require("../utils/logger");
+const contactModel_1 = require("../model/contactModel");
 const logger = new logger_1.Logger('DBLogger');
 dotenv.config();
 const sequelize = new sequelize_typescript_1.Sequelize({
@@ -46,6 +47,7 @@ const sequelize = new sequelize_typescript_1.Sequelize({
     database: process.env.DB_NAME,
     models: [__dirname + '/../contactModel.ts'],
 });
+sequelize.addModels([contactModel_1.Contact]);
 const dbConnect = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield sequelize.authenticate();
