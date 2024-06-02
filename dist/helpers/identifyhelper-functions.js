@@ -18,6 +18,7 @@ var ResponseCodes;
     ResponseCodes[ResponseCodes["OK"] = 200] = "OK";
     ResponseCodes[ResponseCodes["CREATED"] = 201] = "CREATED";
     ResponseCodes[ResponseCodes["INTERNAL_SERVER_ERROR"] = 500] = "INTERNAL_SERVER_ERROR";
+    ResponseCodes[ResponseCodes["CONFLICT"] = 409] = "CONFLICT";
 })(ResponseCodes || (exports.ResponseCodes = ResponseCodes = {}));
 const handleNewContact = (email, phoneNumber) => __awaiter(void 0, void 0, void 0, function* () {
     const newContact = yield (0, identify_helpers_1.createContact)(email, phoneNumber, 'primary');
@@ -44,11 +45,19 @@ const handleExistingContacts = (existingContacts, email, phoneNumber) => __await
         secondaryContacts.push(primaryByPhone);
         primaryContact = primaryByEmail;
     }
-    if (!(existingContacts.some(contact => contact.email === email) && existingContacts.some(contact => contact.phoneNumber === phoneNumber))) {
-        const newContact = yield (0, identify_helpers_1.createContact)(email, phoneNumber, 'secondary', primaryContact.id);
-        secondaryContacts.push(newContact);
-        logger.info(`New Secondary Contact Created : ${newContact}`);
+    const contactExists = existingContacts.some(contact => contact.email === email && contact.phoneNumber === phoneNumber);
+    if (contactExists) {
+        logger.info(`Contact already exists with email: ${email} and phone number: ${phoneNumber}`);
+        return {
+            status: ResponseCodes.CONFLICT,
+            response: {
+                message: `Contact already exists with [email: ${email}] and [phone number: ${phoneNumber}]`
+            }
+        };
     }
+    const newContact = yield (0, identify_helpers_1.createContact)(email, phoneNumber, 'secondary', primaryContact.id);
+    secondaryContacts.push(newContact);
+    logger.info(`New Secondary Contact Created : ${newContact}`);
     const emails = Array.from(new Set(existingContacts.map(contact => contact.email).concat(email).filter(Boolean)));
     const phoneNumbers = Array.from(new Set(existingContacts.map(contact => contact.phoneNumber).concat(phoneNumber).filter(Boolean)));
     const secondaryContactIds = secondaryContacts.map(contact => contact.id);

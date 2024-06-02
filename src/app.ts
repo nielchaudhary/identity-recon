@@ -1,6 +1,5 @@
 import express from 'express';
 const app = express();
-import 'reflect-metadata';
 import { Logger } from './utils/logger';
 import { dbConnect } from './utils/database';
 import { identifyHandler } from './handlers/identifyHandler';

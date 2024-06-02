@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
-require("reflect-metadata");
 const logger_1 = require("./utils/logger");
 const database_1 = require("./utils/database");
 const identifyHandler_1 = require("./handlers/identifyHandler");
