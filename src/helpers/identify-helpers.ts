@@ -1,6 +1,14 @@
 import { Op } from "sequelize";
 import { Contact } from "../model/contactModel";
 
+export enum ResponseCodes {
+    OK = 200,
+    CREATED = 201,
+    INTERNAL_SERVER_ERROR = 500,
+    CONFLICT = 409
+}
+
+
 export const findExistingContacts = async (email: string, phoneNumber: string) => {
     return await Contact.findAll({
         where: {

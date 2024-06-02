@@ -41,10 +41,21 @@ const logger = new logger_1.Logger('DBLogger');
 dotenv.config();
 const sequelize = new sequelize_typescript_1.Sequelize({
     dialect: 'mysql',
+    dialectOptions: {
+        connectTimeout: 60000
+    },
     host: process.env.DB_HOST,
     username: process.env.DB_USER,
+    port: 3306,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    pool: {
+        max: 15,
+        min: 5,
+        idle: 20000,
+        evict: 15000,
+        acquire: 30000
+    },
     models: [__dirname + '/../contactModel.ts'],
 });
 sequelize.addModels([contactModel_1.Contact]);
