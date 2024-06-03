@@ -13,6 +13,9 @@ exports.identifyHandler = void 0;
 const contactModel_1 = require("../model/contactModel");
 const logger_1 = require("../utils/logger");
 const sequelize_1 = require("sequelize");
+const existingContact_helpers_1 = require("../helpers/existingContact-helpers");
+const helper_functions_1 = require("../helpers/helper-functions");
+const createContact_helpers_1 = require("../helpers/createContact-helpers");
 const logger = new logger_1.Logger('identifyHandlerLogger');
 const identifyHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, phoneNumber } = req.body;
@@ -34,7 +37,7 @@ const identifyHandler = (req, res) => __awaiter(void 0, void 0, void 0, function
                 updatedAt: new Date(),
             });
             logger.info(`New Primary Contact Created : ${newContact}`);
-            return res.status(201).json({
+            return res.status(existingContact_helpers_1.ResponseCodes.CREATED).json({
                 contact: {
                     primaryContactId: newContact.id,
                     emails: [newContact.email],
@@ -44,41 +47,16 @@ const identifyHandler = (req, res) => __awaiter(void 0, void 0, void 0, function
             });
         }
         else {
-            let primaryContact = existingContacts.find(contact => contact.linkPrecedence === 'primary') || existingContacts[0];
-            // Correctly identifying the hierarchy to determine the real primary contact
-            if (primaryContact.linkPrecedence === 'secondary' && primaryContact.linkedId) {
-                primaryContact = (yield contactModel_1.Contact.findByPk(primaryContact.linkedId));
-            }
-            const secondaryContacts = existingContacts.filter(contact => contact.linkPrecedence === 'secondary');
-            // Check for a mismatch scenario where email belongs to one primary and phoneNumber to another
-            const primaryByEmail = existingContacts.find(contact => contact.email === email && contact.linkPrecedence === 'primary');
-            const primaryByPhone = existingContacts.find(contact => contact.phoneNumber === phoneNumber && contact.linkPrecedence === 'primary');
-            if (primaryByEmail && primaryByPhone && primaryByEmail.id !== primaryByPhone.id) {
-                // Update the phone number of primaryByEmail to become secondary of primaryByEmail
-                yield primaryByPhone.update({
-                    linkPrecedence: 'secondary',
-                    linkedId: primaryByEmail.id,
-                    updatedAt: new Date(),
-                });
-                secondaryContacts.push(primaryByPhone);
-                primaryContact = primaryByEmail;
-            }
+            const primaryContact = yield (0, existingContact_helpers_1.findPrimaryContact)(existingContacts);
+            const secondaryContacts = yield (0, helper_functions_1.handleMismatchedPrimaryContacts)(existingContacts, email, phoneNumber);
             if (!(existingContacts.some(contact => contact.email === email) && existingContacts.some(contact => contact.phoneNumber === phoneNumber))) {
-                const newContact = yield contactModel_1.Contact.create({
-                    phoneNumber,
-                    email,
-                    linkPrecedence: 'secondary',
-                    linkedId: primaryContact.id,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                });
-                secondaryContacts.push(newContact);
-                logger.info(`New Secondary Contact Created : ${newContact}`);
+                const newSecondaryContact = yield (0, createContact_helpers_1.createSecondaryContact)(primaryContact, phoneNumber, email);
+                secondaryContacts.push(newSecondaryContact);
+                logger.info(`New Secondary Contact Created : ${newSecondaryContact}`);
             }
-            const emails = Array.from(new Set(existingContacts.map(contact => contact.email).concat(email).filter(Boolean)));
-            const phoneNumbers = Array.from(new Set(existingContacts.map(contact => contact.phoneNumber).concat(phoneNumber).filter(Boolean)));
+            const { emails, phoneNumbers } = (0, helper_functions_1.getUniqueEmailsAndPhoneNumbers)(existingContacts, email, phoneNumber);
             const secondaryContactIds = secondaryContacts.map(contact => contact.id);
-            return res.status(200).json({
+            return res.status(existingContact_helpers_1.ResponseCodes.CREATED).json({
                 contact: {
                     primaryContactId: primaryContact.id,
                     emails: emails,
@@ -90,7 +68,7 @@ const identifyHandler = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
     catch (error) {
         logger.error('Error identifying contact:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(existingContact_helpers_1.ResponseCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
     }
 });
 exports.identifyHandler = identifyHandler;
